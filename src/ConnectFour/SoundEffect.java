@@ -1,4 +1,4 @@
-package audio;
+package ConnectFour;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,8 +21,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public enum SoundEffect {
     EAT_FOOD("src/audio/win.wav"),
-    EXPLODE("audio/explode.wav"),
-    DIE("audio/die.wav");
+    EXPLODE("src/audio/win.wav"),
+    DIE("src/audio/win.wav");
 
     /** Nested enumeration for specifying volume */
     public static enum Volume {

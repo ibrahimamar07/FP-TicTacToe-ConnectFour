@@ -1,4 +1,4 @@
-package images;
+package ConnectFour;
 
 import java.awt.Image;
 import java.net.URL;
@@ -17,8 +17,8 @@ import javax.swing.ImageIcon;
  *  however, not supported.
  */
 public enum Seed {   // to save as "Seed.java"
-    CROSS("X", "images/cross.gif"),   // displayName, imageFilename
-    NOUGHT("O", "images/not.gif"),
+    CROSS("X", "images/khabib.gif"),   // displayName, imageFilename
+    NOUGHT("O", "images/mc.gif"),
     NO_SEED(" ", null);
 
     // Private variables
