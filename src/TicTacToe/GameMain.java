@@ -25,24 +25,47 @@ public class GameMain extends JPanel {
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int mouseX = e.getX();
-                int mouseY = e.getY();
-                int row = mouseY / Cell.SIZE;
-                int col = mouseX / Cell.SIZE;
-
                 if (currentState == State.PLAYING) {
-                    if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-                            && board.cells[row][col].content == Seed.NO_SEED) {
-                        currentState = board.stepGame(currentPlayer, row, col);
-                        SoundEffect.EAT_FOOD.play(); // Mainkan suara langkah
-                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                    // Only process click if it's human's turn
+                    if (!playAgainstAI || (playAgainstAI && currentPlayer == Seed.CROSS)) {
+                        int mouseX = e.getX();
+                        int mouseY = e.getY();
+                        int row = mouseY / Cell.SIZE;
+                        int col = mouseX / Cell.SIZE;
+
+                        if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
+                                && board.cells[row][col].content == Seed.NO_SEED) {
+                            // Human move
+                            currentState = board.stepGame(currentPlayer, row, col);
+                            SoundEffect.EAT_FOOD.play();
+                            
+                            // Switch player
+                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+
+                            // If game is still playing and it's AI's turn
+                            if (playAgainstAI && currentState == State.PLAYING && currentPlayer == Seed.NOUGHT) {
+                                // Add small delay before AI moves
+                                Timer timer = new Timer(500, new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent evt) {
+                                        // AI move
+                                        int[] move = aiPlayer.move();
+                                        if (move != null) {
+                                            currentState = board.stepGame(currentPlayer, move[0], move[1]);
+                                            SoundEffect.EAT_FOOD.play();
+                                            currentPlayer = Seed.CROSS; // Switch back to human
+                                            repaint();
+                                        }
+                                    }
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
+                        }
                     }
-                } else if (currentState == State.CROSS_WON || currentState == State.NOUGHT_WON) {
-                    SoundEffect.EXPLODE.play(); // Mainkan suara kemenangan
-                } else if (currentState == State.DRAW) {
-                    SoundEffect.DIE.play(); // Mainkan suara seri
                 } else {
-                    newGame();               
+                    // Game is over, start new game
+                    newGame();
                 }
                 repaint();
             }
