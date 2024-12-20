@@ -1,49 +1,12 @@
-//package  ConnectFour;
-//
-//public class AIPlayer {
-//    private Seed aiSeed;
-//    private Seed opponentSeed;
-//    private static final int MAX_DEPTH = 5;  // Adjust for difficulty level
-//
-//    public AIPlayer(Seed aiSeed) {
-//        this.aiSeed = aiSeed;
-//        this.opponentSeed = (aiSeed == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-//    }
-//
-//    // AI chooses the best move using Minimax Algorithm with Alpha-Beta Pruning
-//    public int getBestMove(Board board) {
-//        int bestCol = -1;
-//        int bestScore = Integer.MIN_VALUE;
-//
-//        for (int col = 0; col < Board.COLS; col++) {
-//            // Check if the column is valid for dropping a piece
-//            for (int row = Board.ROWS - 1; row >= 0; row--) {
-//                if (board.cells[row][col].content == Seed.NO_SEED) {
-//                    // Simulate the move
-//                    board.cells[row][col].content = aiSeed;
-//
-//                    // Get the score for this move
-//                    int score = minimax(board, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
-//
-//                    // Undo the move
-//                    board.cells[row][col].content = Seed.NO_SEED;
-//
-//                    // Choose the move with the best score
-//                    if (score > bestScore) {
-//                        bestScore = score;
-//                        bestCol = col;
-//                    }
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return bestCol;
-//    }
-
-
-
-
+/**
+ * ES234317-Algorithm and Data Structures
+ * Semester Ganjil, 2024/2025
+ * Group Capstone Project
+ * Group 15
+ * 1 - 5026231195- ibrahim amar alfanani
+ * 2 - 5026231219- ghifari rabbani A
+ * 3 - 5026231180 - favian astama
+ */
 
 
 

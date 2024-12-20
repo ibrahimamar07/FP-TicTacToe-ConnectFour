@@ -1,3 +1,13 @@
+/**
+ * ES234317-Algorithm and Data Structures
+ * Semester Ganjil, 2024/2025
+ * Group Capstone Project
+ * Group 15
+ * 1 - 5026231195- ibrahim amar alfanani
+ * 2 - 5026231219- ghifari rabbani A
+ * 3 - 5026231180 - favian astama
+ */
+
 package ConnectFour;
 
 import javax.swing.*;
@@ -40,8 +50,8 @@ public class GameMenu extends JPanel {
 
     private void styleButton(JButton button) {
         button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(new Color(70, 130, 180));
-        button.setForeground(Color.WHITE);
+        button.setBackground(GameSettings.getButtonColor()); // Button color based on theme
+//        button.setForeground(GameSettings.getTextColor()); // Text color based on theme
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setPreferredSize(new Dimension(100, 30));
@@ -99,8 +109,8 @@ public class GameMenu extends JPanel {
     private void showStatsDialog() {
         String stats = String.format(
                 "Game Statistics:\n\n" +
-                        "Player Score: %d\n" +
-                        "AI Score: %d\n" +
+                        "X score: %d\n" +
+                        "O ScoreScore: %d\n" +
                         "Win Rate: %.1f%%",
                 GameSettings.getPlayerScore(),
                 GameSettings.getAIScore(),
@@ -135,6 +145,9 @@ public class GameMenu extends JPanel {
 
         if (selected != null) {
             GameSettings.setTheme((String) selected);
+            // Apply changes immediately after theme selection
+            SwingUtilities.updateComponentTreeUI(gameMain);  // Refresh the UI with new theme
         }
     }
 }
+

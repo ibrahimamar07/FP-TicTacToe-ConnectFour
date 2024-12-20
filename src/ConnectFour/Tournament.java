@@ -1,3 +1,13 @@
+/**
+ * ES234317-Algorithm and Data Structures
+ * Semester Ganjil, 2024/2025
+ * Group Capstone Project
+ * Group 15
+ * 1 - 5026231195- ibrahim amar alfanani
+ * 2 - 5026231219- ghifari rabbani A
+ * 3 - 5026231180 - favian astama
+ */
+
 package ConnectFour;
 
 public class Tournament {
@@ -26,8 +36,8 @@ public class Tournament {
         return String.format(
                 "Tournament Results:\n" +
                         "Matches Played: %d/%d\n" +
-                        "Player Wins: %d\n" +
-                        "AI Wins: %d\n" +
+                        "X Score: %d\n" +
+                        "O score: %d\n" +
                         "Result: %s",
                 currentMatch, MATCHES,
                 playerWins,
@@ -46,3 +56,10 @@ public class Tournament {
         }
     }
 }
+
+
+
+
+
+
+
