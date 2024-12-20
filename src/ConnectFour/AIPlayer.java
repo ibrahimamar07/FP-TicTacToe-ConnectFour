@@ -1,34 +1,98 @@
-package  ConnectFour;
+//package  ConnectFour;
+//
+//public class AIPlayer {
+//    private Seed aiSeed;
+//    private Seed opponentSeed;
+//    private static final int MAX_DEPTH = 5;  // Adjust for difficulty level
+//
+//    public AIPlayer(Seed aiSeed) {
+//        this.aiSeed = aiSeed;
+//        this.opponentSeed = (aiSeed == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+//    }
+//
+//    // AI chooses the best move using Minimax Algorithm with Alpha-Beta Pruning
+//    public int getBestMove(Board board) {
+//        int bestCol = -1;
+//        int bestScore = Integer.MIN_VALUE;
+//
+//        for (int col = 0; col < Board.COLS; col++) {
+//            // Check if the column is valid for dropping a piece
+//            for (int row = Board.ROWS - 1; row >= 0; row--) {
+//                if (board.cells[row][col].content == Seed.NO_SEED) {
+//                    // Simulate the move
+//                    board.cells[row][col].content = aiSeed;
+//
+//                    // Get the score for this move
+//                    int score = minimax(board, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+//
+//                    // Undo the move
+//                    board.cells[row][col].content = Seed.NO_SEED;
+//
+//                    // Choose the move with the best score
+//                    if (score > bestScore) {
+//                        bestScore = score;
+//                        bestCol = col;
+//                    }
+//                    break;
+//                }
+//            }
+//        }
+//
+//        return bestCol;
+//    }
+
+
+
+
+
+
+
+package ConnectFour;
 
 public class AIPlayer {
     private Seed aiSeed;
     private Seed opponentSeed;
-    private static final int MAX_DEPTH = 5;  // Adjust for difficulty level
+    private int difficulty; // 1=Easy, 2=Medium, 3=Hard
+    private static final int MAX_DEPTH = 5;
 
     public AIPlayer(Seed aiSeed) {
         this.aiSeed = aiSeed;
         this.opponentSeed = (aiSeed == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+        this.difficulty = 1; // Default to easy
     }
 
-    // AI chooses the best move using Minimax Algorithm with Alpha-Beta Pruning
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public int getBestMove(Board board) {
+        // Adjust search depth based on difficulty
+        int searchDepth = switch(difficulty) {
+            case 1 -> 2; // Easy: shallow search
+            case 2 -> 4; // Medium: moderate search
+            case 3 -> MAX_DEPTH; // Hard: deep search
+            default -> MAX_DEPTH;
+        };
+
         int bestCol = -1;
         int bestScore = Integer.MIN_VALUE;
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+
+        // Add randomness for easier difficulties
+        if (difficulty < 3) {
+            if (Math.random() < 0.3) { // 30% chance of random move
+                return (int) (Math.random() * Board.COLS);
+            }
+        }
 
         for (int col = 0; col < Board.COLS; col++) {
-            // Check if the column is valid for dropping a piece
             for (int row = Board.ROWS - 1; row >= 0; row--) {
                 if (board.cells[row][col].content == Seed.NO_SEED) {
-                    // Simulate the move
                     board.cells[row][col].content = aiSeed;
-
-                    // Get the score for this move
-                    int score = minimax(board, MAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
-
-                    // Undo the move
+                    int score = minimax(board, searchDepth, alpha, beta, false);
                     board.cells[row][col].content = Seed.NO_SEED;
 
-                    // Choose the move with the best score
                     if (score > bestScore) {
                         bestScore = score;
                         bestCol = col;
