@@ -26,8 +26,8 @@ public class Tournament {
         return String.format(
                 "Tournament Results:\n" +
                         "Matches Played: %d/%d\n" +
-                        "Player Wins: %d\n" +
-                        "AI Wins: %d\n" +
+                        "X Score: %d\n" +
+                        "O score: %d\n" +
                         "Result: %s",
                 currentMatch, MATCHES,
                 playerWins,
@@ -46,3 +46,10 @@ public class Tournament {
         }
     }
 }
+
+
+
+
+
+
+

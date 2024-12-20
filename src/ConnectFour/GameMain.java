@@ -358,7 +358,6 @@ public class GameMain extends JPanel {
     private Tournament tournament;
     private GameMenu gameMenu;
     private boolean isTournamentMode;
-
     public GameMain() {
         // Initialize game menu
         gameMenu = new GameMenu(this);
@@ -404,8 +403,8 @@ public class GameMain extends JPanel {
 
     private void setupUI() {
         statusBar = new JLabel();
-        statusBar.setFont(FONT_STATUS);
-        statusBar.setBackground(COLOR_BG_STATUS);
+//        statusBar.setFont(GameSettings.getTextColor());
+        statusBar.setBackground(GameSettings.getBackgroundColor());
         statusBar.setOpaque(true);
         statusBar.setPreferredSize(new Dimension(300, 30));
         statusBar.setHorizontalAlignment(JLabel.LEFT);
@@ -415,134 +414,204 @@ public class GameMain extends JPanel {
         add(gameMenu, BorderLayout.NORTH);
         add(statusBar, BorderLayout.SOUTH);
         setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 60));
-        setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
-    }
-
-    private int findEmptyRow(int col) {
-        for (int row = Board.ROWS - 1; row >= 0; row--) {
-            if (board.cells[row][col].content == Seed.NO_SEED) {
-                return row;
-            }
-        }
-        return -1;
-    }
-
-    private void makeMove(int row, int col) {
-        board.cells[row][col].content = currentPlayer;
-        currentState = board.stepGame(currentPlayer, row, col);
-
-        if (GameSettings.isSoundEnabled()) {
-            AudioPlayer.playSound("klik.wav");
-        }
-
-        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-        repaint();
-    }
-
-    private void makeAIMove() {
-        if (currentPlayer == Seed.NOUGHT && currentState == State.PLAYING) {
-            int aiCol = aiPlayer.getBestMove(board);
-            int aiRow = findEmptyRow(aiCol);
-
-            if (aiRow != -1) {
-                makeMove(aiRow, aiCol);
-            }
-        }
-    }
-
-    private void handleGameEnd() {
-        if (isTournamentMode && tournament != null) {
-            boolean playerWon = (currentState == State.CROSS_WON);
-            tournament.recordWin(playerWon);
-            GameSettings.updateScore(playerWon);
-
-            if (tournament.isComplete()) {
-                showTournamentResults();
-            }
-        } else if (currentState != State.DRAW) {
-            boolean playerWon = (currentState == State.CROSS_WON);
-            GameSettings.updateScore(playerWon);
-        }
-    }
-
-    private void showTournamentResults() {
-        String results = tournament.getResults();
-        JOptionPane.showMessageDialog(this, results, "Tournament Results",
-                JOptionPane.INFORMATION_MESSAGE);
-        tournament = null;
-        isTournamentMode = false;
-    }
-
-    public void initGame(int gameMode) {
-        board = new Board();
-
-        switch (gameMode) {
-            case 0: // vs AI
-                isAIGame = true;
-                isTournamentMode = false;
-                aiPlayer = new AIPlayer(Seed.NOUGHT);
-                aiPlayer.setDifficulty(GameSettings.getDifficulty());
-                break;
-            case 1: // vs Player
-                isAIGame = false;
-                isTournamentMode = false;
-                aiPlayer = null;
-                break;
-            case 2: // Tournament Mode
-                isAIGame = true;
-                isTournamentMode = true;
-                tournament = new Tournament();
-                aiPlayer = new AIPlayer(Seed.NOUGHT);
-                aiPlayer.setDifficulty(3);
-                break;
-        }
-
-        newGame();
-    }
-
-    public void newGame() {
-        board.newGame();
-        currentPlayer = Seed.CROSS;
-        currentState = State.PLAYING;
-        repaint();
+        setBorder(BorderFactory.createLineBorder(GameSettings.getBackgroundColor(), 2, false));
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        setBackground(COLOR_BG);
+        setBackground(GameSettings.getBackgroundColor()); // Use the theme color
         board.paint(g);
         updateStatusBar();
     }
 
-    private void updateStatusBar() {
-        if (currentState == State.PLAYING) {
-            String currentTurn = (currentPlayer == Seed.CROSS) ? "X" : "O";
-            String modeInfo = isAIGame ? (isTournamentMode ? " (Tournament Mode)" : " (vs AI)") : " (vs Player)";
-            statusBar.setForeground(Color.BLACK);
-            statusBar.setText(currentTurn + "'s Turn" + modeInfo);
-        } else {
-            statusBar.setForeground(Color.RED);
-            if (currentState == State.DRAW) {
-                statusBar.setText("It's a Draw! Click to play again.");
-            } else {
-                String winner = (currentState == State.CROSS_WON) ? "X" : "O";
-                statusBar.setText("'" + winner + "' Won! Click to play again.");
-                if (GameSettings.isSoundEnabled()) {
-                    AudioPlayer.playSound("win.wav");
+//    public GameMain() {
+//        // Initialize game menu
+//        gameMenu = new GameMenu(this);
+//
+//        super.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (currentState == State.PLAYING) {
+//                    int mouseX = e.getX();
+//                    int col = mouseX / Cell.SIZE;
+//
+//                    if (col >= 0 && col < Board.COLS) {
+//                        // Find empty row in the selected column
+//                        int row = findEmptyRow(col);
+//                        if (row != -1) {
+//                            makeMove(row, col);
+//
+//                            // Check for game end and handle tournament mode
+//                            if (currentState != State.PLAYING) {
+//                                handleGameEnd();
+//                            } else if (isAIGame && !isTournamentMode) {
+//                                makeAIMove();
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    if (!isTournamentMode || (tournament != null && tournament.isComplete())) {
+//                        newGame();
+//                    } else {
+//                        tournament.startNewMatch();
+//                        newGame();
+//                    }
+//                }
+//            }
+//        });
+//
+//        // Initialize UI components
+//        setupUI();
+//
+//        // Initial game setup
+//        initGame(0); // Default to AI mode
+//    }
+//
+//    private void setupUI() {
+//        statusBar = new JLabel();
+//        statusBar.setFont(FONT_STATUS);
+//        statusBar.setBackground(COLOR_BG_STATUS);
+//        statusBar.setOpaque(true);
+//        statusBar.setPreferredSize(new Dimension(300, 30));
+//        statusBar.setHorizontalAlignment(JLabel.LEFT);
+//        statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
+//
+//        setLayout(new BorderLayout());
+//        add(gameMenu, BorderLayout.NORTH);
+//        add(statusBar, BorderLayout.SOUTH);
+//        setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 60));
+//        setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
+//    }
+
+
+
+
+        private int findEmptyRow(int col) {
+            for (int row = Board.ROWS - 1; row >= 0; row--) {
+                if (board.cells[row][col].content == Seed.NO_SEED) {
+                    return row;
+                }
+            }
+            return -1;
+        }
+
+        private void makeMove(int row, int col) {
+            board.cells[row][col].content = currentPlayer;
+            currentState = board.stepGame(currentPlayer, row, col);
+
+            if (GameSettings.isSoundEnabled()) {
+                AudioPlayer.playSound("klik.wav");
+            }
+
+            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+            repaint();
+        }
+
+        private void makeAIMove() {
+            if (currentPlayer == Seed.NOUGHT && currentState == State.PLAYING) {
+                int aiCol = aiPlayer.getBestMove(board);
+                int aiRow = findEmptyRow(aiCol);
+
+                if (aiRow != -1) {
+                    makeMove(aiRow, aiCol);
                 }
             }
         }
-    }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame(TITLE);
-            frame.setContentPane(new GameMain());
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+        private void handleGameEnd() {
+            if (isTournamentMode && tournament != null) {
+                boolean playerWon = (currentState == State.CROSS_WON);
+                tournament.recordWin(playerWon);
+                GameSettings.updateScore(playerWon);
+
+                if (tournament.isComplete()) {
+                    showTournamentResults();
+                }
+            } else if (currentState != State.DRAW) {
+                boolean playerWon = (currentState == State.CROSS_WON);
+                GameSettings.updateScore(playerWon);
+            }
+        }
+
+        private void showTournamentResults() {
+            String results = tournament.getResults();
+            JOptionPane.showMessageDialog(this, results, "Tournament Results",
+                    JOptionPane.INFORMATION_MESSAGE);
+            tournament = null;
+            isTournamentMode = false;
+        }
+
+        public void initGame(int gameMode) {
+            board = new Board();
+
+            switch (gameMode) {
+                case 0: // vs AI
+                    isAIGame = true;
+                    isTournamentMode = false;
+                    aiPlayer = new AIPlayer(Seed.NOUGHT);
+                    aiPlayer.setDifficulty(GameSettings.getDifficulty());
+                    break;
+                case 1: // vs Player
+                    isAIGame = false;
+                    isTournamentMode = false;
+                    aiPlayer = null;
+                    break;
+                case 2: // Tournament Mode
+                    isAIGame = true;
+                    isTournamentMode = true;
+                    tournament = new Tournament();
+                    aiPlayer = new AIPlayer(Seed.NOUGHT);
+                    aiPlayer.setDifficulty(3);
+                    break;
+            }
+
+            newGame();
+        }
+
+        public void newGame() {
+            board.newGame();
+            currentPlayer = Seed.CROSS;
+            currentState = State.PLAYING;
+            repaint();
+        }
+
+//        @Override
+//        public void paintComponent(Graphics g) {
+//            super.paintComponent(g);
+//            setBackground(COLOR_BG);
+//            board.paint(g);
+//            updateStatusBar();
+//        }
+
+        private void updateStatusBar() {
+            if (currentState == State.PLAYING) {
+                String currentTurn = (currentPlayer == Seed.CROSS) ? "X" : "O";
+                String modeInfo = isAIGame ? (isTournamentMode ? " (Tournament Mode)" : " (vs AI)") : " (vs Player)";
+                statusBar.setForeground(Color.BLACK);
+                statusBar.setText(currentTurn + "'s Turn" + modeInfo);
+            } else {
+                statusBar.setForeground(Color.RED);
+                if (currentState == State.DRAW) {
+                    statusBar.setText("It's a Draw! Click to play again.");
+                } else {
+                    String winner = (currentState == State.CROSS_WON) ? "X" : "O";
+                    statusBar.setText("'" + winner + "' Won! Click to play again.");
+                    if (GameSettings.isSoundEnabled()) {
+                        AudioPlayer.playSound("win.wav");
+                    }
+                }
+            }
+        }
+
+        public static void main(String[] args) {
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame(TITLE);
+                frame.setContentPane(new GameMain());
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            });
+        }
     }
-}
